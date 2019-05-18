@@ -22,9 +22,12 @@
 
 #pragma once
 
+#include <units/bits/config.h>
 #include <experimental/ranges/concepts>
 
 namespace std {
+
+#ifndef UNITS_HAS_STD_TYPE_IDENTITY
 
   // type_identity
   template<typename T>
@@ -32,6 +35,8 @@ namespace std {
 
   template<typename T>
   using type_identity_t = typename type_identity<T>::type;
+
+#endif // UNITS_HAS_STD_TYPE_IDENTITY
 
   // concepts
   using experimental::ranges::Same;
