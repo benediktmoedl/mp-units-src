@@ -22,31 +22,19 @@
 
 #pragma once
 
-#include <units/physical/dimensions.h>
-#include <units/physical/si/length.h>
-#include <units/physical/si/time.h>
-#include <units/quantity.h>
+#include <units/physical/si/area.h>
+#include <units/physical/us/length.h>
 
-namespace units::si {
+namespace units::us {
 
-struct metre_per_second : unit<metre_per_second> {};
-struct dim_velocity : physical::dim_velocity<dim_velocity, metre_per_second, dim_length, dim_time> {};
-
-struct kilometre_per_hour : deduced_unit<kilometre_per_hour, dim_velocity, kilometre, hour> {};
-
-template<Unit U, Scalar Rep = double>
-using velocity = quantity<dim_velocity, U, Rep>;
+struct square_foot : deduced_unit<square_foot, si::dim_area, foot> {};
 
 inline namespace literals {
 
-// mps
-constexpr auto operator"" mps(unsigned long long l) { return velocity<metre_per_second, std::int64_t>(l); }
-constexpr auto operator"" mps(long double l) { return velocity<metre_per_second, long double>(l); }
-
-// kmph
-constexpr auto operator"" kmph(unsigned long long l) { return velocity<kilometre_per_hour, std::int64_t>(l); }
-constexpr auto operator"" kmph(long double l) { return velocity<kilometre_per_hour, long double>(l); }
+// sq_ft
+constexpr auto operator"" sq_ft(unsigned long long l) { return si::area<square_foot, std::int64_t>(l); }
+constexpr auto operator"" sq_ft(long double l) { return si::area<square_foot, long double>(l); }
 
 }  // namespace literals
 
-}  // namespace units::si
+}  // namespace units::us
