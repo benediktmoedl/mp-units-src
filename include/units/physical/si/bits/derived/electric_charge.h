@@ -22,11 +22,32 @@
 
 #pragma once
 
-#include <units/physical/natural/bits/dimensions.h>
+#ifndef MP_UNITS_SYSTEM_SI
 
-namespace units::physical::natural {
+#error "Please do not include this file directly. Use `units/physical/si/si.h` to prevent potential ODR violation issues."
 
-template<ScalableNumber Rep = double>
-inline constexpr auto speed_of_light = speed<one, Rep>(1);
+#endif
 
-}  // namespace units::physical::natural
+#include <units/physical/dimensions.h>
+#include <units/physical/si/base/current.h>
+#include <units/physical/si/base/time.h>
+#include <units/quantity.h>
+
+namespace units::physical::si {
+
+struct coulomb : named_unit<coulomb, "C", prefix> {};
+
+struct dim_electric_charge : physical::dim_electric_charge<dim_electric_charge, coulomb, dim_time, dim_electric_current> {};
+
+template<Unit U, ScalableNumber Rep = double>
+using electric_charge = quantity<dim_electric_charge, U, Rep>;
+
+inline namespace literals {
+
+// C
+constexpr auto operator"" _q_C(unsigned long long l) { return electric_charge<coulomb, std::int64_t>(l); }
+constexpr auto operator"" _q_C(long double l) { return electric_charge<coulomb, long double>(l); }
+
+}  // namespace literals
+
+}  // namespace units::physical::si

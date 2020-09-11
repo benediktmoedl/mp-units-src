@@ -22,11 +22,21 @@
 
 #pragma once
 
-#include <units/physical/natural/bits/dimensions.h>
+#include <units/physical/dimensions.h>
+#include <units/physical/si/base/time.h>
+#include <units/quantity.h>
 
-namespace units::physical::natural {
+namespace units::physical::si::cgs {
 
-template<ScalableNumber Rep = double>
-inline constexpr auto speed_of_light = speed<one, Rep>(1);
+using si::second;
 
-}  // namespace units::physical::natural
+using si::dim_time;
+using si::time;
+
+inline namespace literals {
+
+using si::literals::operator"" _q_s;
+
+}
+
+}  // namespace units::physical::si::cgs

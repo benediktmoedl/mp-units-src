@@ -22,11 +22,30 @@
 
 #pragma once
 
-#include <units/physical/natural/bits/dimensions.h>
+#ifndef MP_UNITS_SYSTEM_SI_FPS
 
-namespace units::physical::natural {
+#error "Please do not include this file directly. Use `units/physical/si/fps/fps.h` to prevent potential ODR violation issues."
 
-template<ScalableNumber Rep = double>
-inline constexpr auto speed_of_light = speed<one, Rep>(1);
+#endif
 
-}  // namespace units::physical::natural
+#include <units/physical/dimensions.h>
+#include <units/physical/si/fps/bits/derived/speed.h>
+#include <units/quantity.h>
+
+namespace units::physical::si::fps {
+
+struct foot_per_second_sq : unit<foot_per_second_sq> {};
+struct dim_acceleration : physical::dim_acceleration<dim_acceleration, foot_per_second_sq, dim_length, dim_time> {};
+
+template<Unit U, ScalableNumber Rep = double>
+using acceleration = quantity<dim_acceleration, U, Rep>;
+
+inline namespace literals {
+
+// ft_per_s2
+constexpr auto operator"" _q_ft_per_s2(unsigned long long l) { return acceleration<foot_per_second_sq, std::int64_t>(l); }
+constexpr auto operator"" _q_ft_per_s2(long double l) { return acceleration<foot_per_second_sq, long double>(l); }
+
+}  // namespace literals
+
+}  // namespace units::physical::si::fps

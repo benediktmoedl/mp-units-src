@@ -22,11 +22,32 @@
 
 #pragma once
 
-#include <units/physical/natural/bits/dimensions.h>
+#ifndef MP_UNITS_SYSTEM_SI
 
-namespace units::physical::natural {
+#error "Please do not include this file directly. Use `units/physical/si/si.h` to prevent potential ODR violation issues."
 
-template<ScalableNumber Rep = double>
-inline constexpr auto speed_of_light = speed<one, Rep>(1);
+#endif
 
-}  // namespace units::physical::natural
+#include <units/physical/dimensions.h>
+#include <units/physical/si/base/length.h>
+#include <units/physical/si/base/substance.h>
+#include <units/quantity.h>
+
+namespace units::physical::si {
+
+struct mol_per_metre_cub : unit<mol_per_metre_cub> {};
+struct dim_concentration : physical::dim_concentration<dim_concentration, mol_per_metre_cub, dim_substance, dim_length> {};
+
+template<Unit U, ScalableNumber Rep = double>
+using concentration = quantity<dim_concentration, U, Rep>;
+
+inline namespace literals {
+
+// mol/m³
+constexpr auto operator"" _q_mol_per_m3(unsigned long long l) { return concentration<mol_per_metre_cub, std::int64_t>(l); }
+constexpr auto operator"" _q_mol_per_m3(long double l) { return concentration<mol_per_metre_cub, long double>(l); }
+
+}  // namespace literals
+
+}  // namespace units::physical::si
+

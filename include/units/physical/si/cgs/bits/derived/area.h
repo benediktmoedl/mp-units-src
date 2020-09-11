@@ -22,11 +22,32 @@
 
 #pragma once
 
-#include <units/physical/natural/bits/dimensions.h>
+#ifndef MP_UNITS_SYSTEM_SI_CGS
 
-namespace units::physical::natural {
+#error "Please do not include this file directly. Use `units/physical/si/cgs/cgs.h` to prevent potential ODR violation issues."
 
-template<ScalableNumber Rep = double>
-inline constexpr auto speed_of_light = speed<one, Rep>(1);
+#endif
 
-}  // namespace units::physical::natural
+#include <units/physical/dimensions.h>
+#include <units/physical/si/cgs/base/length.h>
+#include <units/physical/si/si.h>
+#include <units/quantity.h>
+
+namespace units::physical::si::cgs {
+
+using si::square_centimetre;
+
+struct dim_area : physical::dim_area<dim_area, square_centimetre, dim_length> {};
+
+template<Unit U, ScalableNumber Rep = double>
+using area = quantity<dim_area, U, Rep>;
+
+inline namespace literals {
+
+// cm2
+constexpr auto operator"" _q_cm2(unsigned long long l) { return area<square_centimetre, std::int64_t>(l); }
+constexpr auto operator"" _q_cm2(long double l) { return area<square_centimetre, long double>(l); }
+
+}
+
+}  // namespace units::physical::si::cgs

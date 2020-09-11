@@ -22,11 +22,25 @@
 
 #pragma once
 
-#include <units/physical/natural/bits/dimensions.h>
+#include <units/physical/dimensions.h>
+#include <units/physical/si/base/length.h>
+#include <units/quantity.h>
 
-namespace units::physical::natural {
+namespace units::physical::si::cgs {
 
-template<ScalableNumber Rep = double>
-inline constexpr auto speed_of_light = speed<one, Rep>(1);
+using si::centimetre;
 
-}  // namespace units::physical::natural
+struct dim_length : physical::dim_length<centimetre> {};
+
+template<Unit U, ScalableNumber Rep = double>
+using length = quantity<dim_length, U, Rep>;
+
+inline namespace literals {
+
+// cm
+constexpr auto operator"" _q_cm(unsigned long long l) { return length<centimetre, std::int64_t>(l); }
+constexpr auto operator"" _q_cm(long double l) { return length<centimetre, long double>(l); }
+
+}
+
+}  // namespace units::physical::si::cgs

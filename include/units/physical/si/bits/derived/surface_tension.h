@@ -22,11 +22,31 @@
 
 #pragma once
 
-#include <units/physical/natural/bits/dimensions.h>
+#ifndef MP_UNITS_SYSTEM_SI
 
-namespace units::physical::natural {
+#error "Please do not include this file directly. Use `units/physical/si/si.h` to prevent potential ODR violation issues."
 
-template<ScalableNumber Rep = double>
-inline constexpr auto speed_of_light = speed<one, Rep>(1);
+#endif
 
-}  // namespace units::physical::natural
+#include <units/physical/dimensions.h>
+#include <units/physical/si/bits/derived/force.h>
+#include <units/quantity.h>
+
+namespace units::physical::si {
+
+struct newton_per_metre : unit<newton_per_metre> {};
+
+struct dim_surface_tension : physical::dim_surface_tension<dim_surface_tension, newton_per_metre, dim_force, dim_length> {};
+
+template<Unit U, ScalableNumber Rep = double>
+using surface_tension = quantity<dim_surface_tension, U, Rep>;
+
+inline namespace literals {
+
+  // Nm
+  constexpr auto operator"" _q_N_per_m(unsigned long long l) { return surface_tension<newton_per_metre, std::int64_t>(l); }
+  constexpr auto operator"" _q_N_per_m(long double l) { return surface_tension<newton_per_metre, long double>(l); }
+
+}  // namespace literals
+
+}  // namespace units::physical::si

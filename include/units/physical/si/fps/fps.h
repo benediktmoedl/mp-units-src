@@ -22,11 +22,18 @@
 
 #pragma once
 
-#include <units/physical/natural/bits/dimensions.h>
+#define MP_UNITS_SYSTEM_SI_FPS
 
-namespace units::physical::natural {
+#include <units/physical/si/fps/base/length.h>
+#include <units/physical/si/fps/base/mass.h>
+#include <units/physical/si/fps/base/time.h>
 
-template<ScalableNumber Rep = double>
-inline constexpr auto speed_of_light = speed<one, Rep>(1);
-
-}  // namespace units::physical::natural
+#include <units/physical/si/fps/bits/derived/acceleration.h>
+#include <units/physical/si/fps/bits/derived/area.h>
+#include <units/physical/si/fps/bits/derived/density.h>
+#include <units/physical/si/fps/bits/derived/energy.h>
+#include <units/physical/si/fps/bits/derived/force.h>
+#include <units/physical/si/fps/bits/derived/power.h>
+#include <units/physical/si/fps/bits/derived/pressure.h>
+#include <units/physical/si/fps/bits/derived/speed.h>
+#include <units/physical/si/fps/bits/derived/volume.h>

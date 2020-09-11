@@ -22,11 +22,26 @@
 
 #pragma once
 
-#include <units/physical/natural/bits/dimensions.h>
+#include <units/physical/si/prefixes.h>
+#include <units/quantity.h>
 
-namespace units::physical::natural {
+namespace units {
 
-template<ScalableNumber Rep = double>
-inline constexpr auto speed_of_light = speed<one, Rep>(1);
+struct radian : named_unit<radian, "rad", physical::si::prefix> {};
 
-}  // namespace units::physical::natural
+template<Unit U = radian>
+struct dim_angle : base_dimension<"A", U> {};
+
+template<Unit U, ScalableNumber Rep = double>
+using angle = quantity<dim_angle<>, U, Rep>;
+
+inline namespace literals {
+
+// rad
+constexpr auto operator"" _q_rad(unsigned long long l) { return angle<radian, std::int64_t>(l); }
+constexpr auto operator"" _q_rad(long double l) { return angle<radian, long double>(l); }
+
+
+}  // namespace literals
+
+}  // namespace units

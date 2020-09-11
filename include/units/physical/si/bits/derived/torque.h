@@ -22,11 +22,33 @@
 
 #pragma once
 
-#include <units/physical/natural/bits/dimensions.h>
+#ifndef MP_UNITS_SYSTEM_SI
 
-namespace units::physical::natural {
+#error "Please do not include this file directly. Use `units/physical/si/si.h` to prevent potential ODR violation issues."
 
-template<ScalableNumber Rep = double>
-inline constexpr auto speed_of_light = speed<one, Rep>(1);
+#endif
 
-}  // namespace units::physical::natural
+#include <units/physical/dimensions.h>
+#include <units/physical/si/bits/derived/energy.h>
+#include <units/generic/angle.h>
+#include <units/physical/si/prefixes.h>
+#include <units/quantity.h>
+
+namespace units::physical::si {
+
+struct newton_metre : named_unit<newton_metre, "Nm", prefix> {};
+
+struct dim_torque : physical::dim_torque<dim_torque, newton_metre, dim_energy, dim_angle<>> {};
+
+template<Unit U, ScalableNumber Rep = double>
+using torque = quantity<dim_torque, U, Rep>;
+
+inline namespace literals {
+
+// Nm
+constexpr auto operator"" _q_Nm(unsigned long long l) { return torque<newton_metre, std::int64_t>(l); }
+constexpr auto operator"" _q_Nm(long double l) { return torque<newton_metre, long double>(l); }
+
+}  // namespace literals
+
+}  // namespace units::physical::si

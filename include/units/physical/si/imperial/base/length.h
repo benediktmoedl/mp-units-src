@@ -22,11 +22,24 @@
 
 #pragma once
 
-#include <units/physical/natural/bits/dimensions.h>
+#include <units/physical/si/international/base/length.h>
 
-namespace units::physical::natural {
+namespace units::physical::si::imperial {
 
-template<ScalableNumber Rep = double>
-inline constexpr auto speed_of_light = speed<one, Rep>(1);
+// https://en.wikipedia.org/wiki/Chain_(unit)
+struct chain : named_scaled_unit<chain, "ch", no_prefix, ratio(22, 1), si::international::yard> {};
 
-}  // namespace units::physical::natural
+// https://en.wikipedia.org/wiki/Rod_(unit)
+struct rod : named_scaled_unit<rod, "rd", no_prefix, ratio(1, 4), chain> {};
+
+inline namespace literals {
+
+constexpr auto operator"" _q_ch(unsigned long long l) { return si::length<chain, std::int64_t>(l); }
+constexpr auto operator"" _q_ch(long double l) { return si::length<chain, long double>(l); }
+
+constexpr auto operator"" _q_rd(unsigned long long l) { return si::length<rod, std::int64_t>(l); }
+constexpr auto operator"" _q_rd(long double l) { return si::length<rod, long double>(l); }
+
+}  // namespace literals
+
+}  // namespace units::physical::si::imperial

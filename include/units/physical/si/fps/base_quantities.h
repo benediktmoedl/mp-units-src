@@ -22,11 +22,6 @@
 
 #pragma once
 
-#include <units/physical/natural/bits/dimensions.h>
-
-namespace units::physical::natural {
-
-template<ScalableNumber Rep = double>
-inline constexpr auto speed_of_light = speed<one, Rep>(1);
-
-}  // namespace units::physical::natural
+#include <units/physical/si/fps/bits/base_quantities/length.h>
+#include <units/physical/si/fps/bits/base_quantities/mass.h>
+#include <units/physical/si/fps/bits/base_quantities/time.h>

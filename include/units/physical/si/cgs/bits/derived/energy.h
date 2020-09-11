@@ -22,11 +22,32 @@
 
 #pragma once
 
-#include <units/physical/natural/bits/dimensions.h>
+#ifndef MP_UNITS_SYSTEM_SI_CGS
 
-namespace units::physical::natural {
+#error "Please do not include this file directly. Use `units/physical/si/cgs/cgs.h` to prevent potential ODR violation issues."
 
-template<ScalableNumber Rep = double>
-inline constexpr auto speed_of_light = speed<one, Rep>(1);
+#endif
 
-}  // namespace units::physical::natural
+#include <units/physical/dimensions.h>
+#include <units/physical/si/cgs/bits/derived/force.h>
+#include <units/physical/si/prefixes.h>
+#include <units/quantity.h>
+
+namespace units::physical::si::cgs {
+
+struct erg : named_unit<erg, "erg", si::prefix> {};
+
+struct dim_energy : physical::dim_energy<dim_energy, erg, dim_force, dim_length> {};
+
+template<Unit U, ScalableNumber Rep = double>
+using energy = quantity<dim_energy, U, Rep>;
+
+inline namespace literals {
+
+// erg
+constexpr auto operator"" _q_erg(unsigned long long l) { return energy<erg, std::int64_t>(l); }
+constexpr auto operator"" _q_erg(long double l) { return energy<erg, long double>(l); }
+
+}  // namespace literals
+
+}  // namespace units::physical::si::cgs

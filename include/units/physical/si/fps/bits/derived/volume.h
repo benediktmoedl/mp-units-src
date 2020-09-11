@@ -22,11 +22,36 @@
 
 #pragma once
 
-#include <units/physical/natural/bits/dimensions.h>
+#ifndef MP_UNITS_SYSTEM_SI_FPS
 
-namespace units::physical::natural {
+#error "Please do not include this file directly. Use `units/physical/si/fps/fps.h` to prevent potential ODR violation issues."
 
-template<ScalableNumber Rep = double>
-inline constexpr auto speed_of_light = speed<one, Rep>(1);
+#endif
 
-}  // namespace units::physical::natural
+#include <units/physical/dimensions.h>
+#include <units/physical/si/fps/base/length.h>
+#include <units/quantity.h>
+
+namespace units::physical::si::fps {
+
+struct cubic_foot : unit<cubic_foot> {};
+struct dim_volume : physical::dim_volume<dim_volume, cubic_foot, dim_length> {};
+
+struct cubic_yard : deduced_unit<cubic_yard, dim_volume, yard> {};
+
+template<Unit U, ScalableNumber Rep = double>
+using volume = quantity<dim_volume, U, Rep>;
+
+inline namespace literals {
+
+// ft3
+constexpr auto operator"" _q_ft3(unsigned long long l) { return volume<cubic_foot, std::int64_t>(l); }
+constexpr auto operator"" _q_ft3(long double l) { return volume<cubic_foot, long double>(l); }
+
+// yard3
+constexpr auto operator"" _q_yd3(unsigned long long l) { return volume<cubic_yard, std::int64_t>(l); }
+constexpr auto operator"" _q_yd3(long double l) { return volume<cubic_yard, long double>(l); }
+
+}  // namespace literals
+
+}  // namespace units::physical::si::fps

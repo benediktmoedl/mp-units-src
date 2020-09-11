@@ -22,11 +22,34 @@
 
 #pragma once
 
-#include <units/physical/natural/bits/dimensions.h>
+#ifndef MP_UNITS_SYSTEM_SI
 
-namespace units::physical::natural {
+#error "Please do not include this file directly. Use `units/physical/si/si.h` to prevent potential ODR violation issues."
 
-template<ScalableNumber Rep = double>
-inline constexpr auto speed_of_light = speed<one, Rep>(1);
+#endif
 
-}  // namespace units::physical::natural
+#include <units/physical/dimensions.h>
+#include <units/generic/angle.h>
+#include <units/physical/si/base/time.h>
+
+#include <units/quantity.h>
+
+namespace units::physical::si {
+
+struct radian_per_second : named_unit<radian_per_second, basic_symbol_text{"ω", "w"}, no_prefix> {};
+
+struct dim_angular_velocity : physical::dim_angular_velocity<dim_angular_velocity, radian_per_second, dim_angle<>, dim_time> {};
+
+template<Unit U, ScalableNumber Rep = double>
+using angular_velocity = quantity<dim_angular_velocity, U, Rep>;
+
+inline namespace literals {
+
+// rad / s
+constexpr auto operator"" _q_rad_per_s(unsigned long long l) { return angular_velocity<radian_per_second, std::int64_t>(l); }
+constexpr auto operator"" _q_rad_per_s(long double l) { return angular_velocity<radian_per_second, long double>(l); }
+
+
+}  // namespace literals
+
+}  // namespace units::physical::si

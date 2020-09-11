@@ -22,11 +22,25 @@
 
 #pragma once
 
-#include <units/physical/natural/bits/dimensions.h>
+#ifndef MP_UNITS_SYSTEM_SI_INTERNATIONAL
 
-namespace units::physical::natural {
+#error "Please do not include this file directly. Use `units/physical/si/international/international.h` to prevent potential ODR violation issues."
 
-template<ScalableNumber Rep = double>
-inline constexpr auto speed_of_light = speed<one, Rep>(1);
+#endif
 
-}  // namespace units::physical::natural
+#include <units/physical/si/si.h>
+#include <units/physical/si/international/base/length.h>
+
+namespace units::physical::si::international {
+
+struct cubic_foot : deduced_unit<cubic_foot, si::dim_volume, si::international::foot> {};
+
+inline namespace literals {
+
+// ft3
+constexpr auto operator"" _q_ft3(unsigned long long l) { return si::volume<cubic_foot, std::int64_t>(l); }
+constexpr auto operator"" _q_ft3(long double l) { return si::volume<cubic_foot, long double>(l); }
+
+}  // namespace literals
+
+}  // namespace units::physical::si::international

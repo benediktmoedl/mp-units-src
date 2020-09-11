@@ -22,11 +22,33 @@
 
 #pragma once
 
-#include <units/physical/natural/bits/dimensions.h>
+#ifndef MP_UNITS_SYSTEM_SI_CGS
 
-namespace units::physical::natural {
+#error "Please do not include this file directly. Use `units/physical/si/cgs/cgs.h` to prevent potential ODR violation issues."
 
-template<ScalableNumber Rep = double>
-inline constexpr auto speed_of_light = speed<one, Rep>(1);
+#endif
 
-}  // namespace units::physical::natural
+#include <units/physical/dimensions.h>
+#include <units/physical/si/cgs/bits/derived/area.h>
+#include <units/physical/si/cgs/bits/derived/force.h>
+#include <units/physical/si/prefixes.h>
+#include <units/quantity.h>
+
+namespace units::physical::si::cgs {
+
+struct barye : named_unit<barye, "Ba", si::prefix> {};
+
+struct dim_pressure : physical::dim_pressure<dim_pressure, barye, dim_force, dim_area> {};
+
+template<Unit U, ScalableNumber Rep = double>
+using pressure = quantity<dim_pressure, U, Rep>;
+
+inline namespace literals {
+
+// Ba
+constexpr auto operator"" _q_Ba(unsigned long long l) { return pressure<barye, std::int64_t>(l); }
+constexpr auto operator"" _q_Ba(long double l) { return pressure<barye, long double>(l); }
+
+}  // namespace literals
+
+}  // namespace units::physical::si::cgs

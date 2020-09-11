@@ -22,11 +22,9 @@
 
 #pragma once
 
-#include <units/physical/natural/bits/dimensions.h>
+#define MP_UNITS_SYSTEM_NATURAL
 
-namespace units::physical::natural {
+#include "bits/dimensions.h"
+#include "bits/units.h"
 
-template<ScalableNumber Rep = double>
-inline constexpr auto speed_of_light = speed<one, Rep>(1);
-
-}  // namespace units::physical::natural
+#include "constants.h"

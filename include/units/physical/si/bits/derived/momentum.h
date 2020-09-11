@@ -22,11 +22,31 @@
 
 #pragma once
 
-#include <units/physical/natural/bits/dimensions.h>
+#ifndef MP_UNITS_SYSTEM_SI
 
-namespace units::physical::natural {
+#error "Please do not include this file directly. Use `units/physical/si/si.h` to prevent potential ODR violation issues."
 
-template<ScalableNumber Rep = double>
-inline constexpr auto speed_of_light = speed<one, Rep>(1);
+#endif
 
-}  // namespace units::physical::natural
+#include <units/physical/dimensions.h>
+#include <units/physical/si/base/mass.h>
+#include <units/physical/si/bits/derived/speed.h>
+#include <units/quantity.h>
+
+namespace units::physical::si {
+
+struct kilogram_metre_per_second : unit<kilogram_metre_per_second> {};
+struct dim_momentum : physical::dim_momentum<dim_momentum, kilogram_metre_per_second, dim_mass, dim_speed> {};
+
+template<Unit U, ScalableNumber Rep = double>
+using momentum = quantity<dim_momentum, U, Rep>;
+
+inline namespace literals {
+
+// kgmps
+constexpr auto operator"" _q_kg_m_per_s(unsigned long long l) { return momentum<kilogram_metre_per_second, std::int64_t>(l); }
+constexpr auto operator"" _q_kg_m_per_s(long double l) { return momentum<kilogram_metre_per_second, long double>(l); }
+
+}  // namespace literals
+
+}  // namespace units::physical::si

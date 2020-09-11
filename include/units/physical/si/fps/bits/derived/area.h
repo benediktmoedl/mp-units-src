@@ -22,11 +22,31 @@
 
 #pragma once
 
-#include <units/physical/natural/bits/dimensions.h>
+#ifndef MP_UNITS_SYSTEM_SI_FPS
 
-namespace units::physical::natural {
+#error "Please do not include this file directly. Use `units/physical/si/fps/fps.h` to prevent potential ODR violation issues."
 
-template<ScalableNumber Rep = double>
-inline constexpr auto speed_of_light = speed<one, Rep>(1);
+#endif
 
-}  // namespace units::physical::natural
+#include <units/physical/dimensions.h>
+#include <units/physical/si/fps/base/length.h>
+#include <units/quantity.h>
+
+namespace units::physical::si::fps {
+
+struct square_foot : unit<square_foot> {};
+struct dim_area : physical::dim_area<dim_area, square_foot, dim_length> {};
+
+
+template<Unit U, ScalableNumber Rep = double>
+using area = quantity<dim_area, U, Rep>;
+
+inline namespace literals {
+
+// ft2
+constexpr auto operator"" _q_ft2(unsigned long long l) { return area<square_foot, std::int64_t>(l); }
+constexpr auto operator"" _q_ft2(long double l) { return area<square_foot, long double>(l); }
+
+}
+
+}  // namespace units::physical::si::fps

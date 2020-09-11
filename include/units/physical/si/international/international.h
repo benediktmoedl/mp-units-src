@@ -22,11 +22,10 @@
 
 #pragma once
 
-#include <units/physical/natural/bits/dimensions.h>
+#define MP_UNITS_SYSTEM_SI_INTERNATIONAL
 
-namespace units::physical::natural {
+#include <units/physical/si/international/base/length.h>
 
-template<ScalableNumber Rep = double>
-inline constexpr auto speed_of_light = speed<one, Rep>(1);
-
-}  // namespace units::physical::natural
+#include <units/physical/si/international/bits/derived/area.h>
+#include <units/physical/si/international/bits/derived/speed.h>
+#include <units/physical/si/international/bits/derived/volume.h>

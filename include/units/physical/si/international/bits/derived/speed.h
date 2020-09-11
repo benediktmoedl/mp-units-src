@@ -22,11 +22,25 @@
 
 #pragma once
 
-#include <units/physical/natural/bits/dimensions.h>
+#ifndef MP_UNITS_SYSTEM_SI_INTERNATIONAL
 
-namespace units::physical::natural {
+#error "Please do not include this file directly. Use `units/physical/si/international/international.h` to prevent potential ODR violation issues."
 
-template<ScalableNumber Rep = double>
-inline constexpr auto speed_of_light = speed<one, Rep>(1);
+#endif
 
-}  // namespace units::physical::natural
+#include <units/physical/si/si.h>
+#include <units/physical/si/international/base/length.h>
+
+namespace units::physical::si::international {
+
+struct mile_per_hour : deduced_unit<mile_per_hour, si::dim_speed, si::international::mile, si::hour> {};
+
+inline namespace literals {
+
+// mph
+constexpr auto operator"" _q_mi_per_h(unsigned long long l) { return si::speed<mile_per_hour, std::int64_t>(l); }
+constexpr auto operator"" _q_mi_per_h(long double l) { return si::speed<mile_per_hour, long double>(l); }
+
+}  // namespace literals
+
+}  // namespace units::physical::si::international

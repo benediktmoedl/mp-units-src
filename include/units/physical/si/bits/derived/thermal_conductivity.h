@@ -22,11 +22,32 @@
 
 #pragma once
 
-#include <units/physical/natural/bits/dimensions.h>
+#ifndef MP_UNITS_SYSTEM_SI
 
-namespace units::physical::natural {
+#error "Please do not include this file directly. Use `units/physical/si/si.h` to prevent potential ODR violation issues."
 
-template<ScalableNumber Rep = double>
-inline constexpr auto speed_of_light = speed<one, Rep>(1);
+#endif
 
-}  // namespace units::physical::natural
+#include <units/physical/dimensions.h>
+#include <units/physical/si/bits/derived/power.h>
+#include <units/physical/si/base/temperature.h>
+#include <units/quantity.h>
+
+namespace units::physical::si {
+
+struct watt_per_metre_kelvin : unit<watt_per_metre_kelvin> {};
+
+struct dim_thermal_conductivity : physical::dim_thermal_conductivity<dim_thermal_conductivity, watt_per_metre_kelvin, dim_power, dim_length, dim_thermodynamic_temperature> {};
+
+template<Unit U, ScalableNumber Rep = double>
+using thermal_conductivity = quantity<dim_thermal_conductivity, U, Rep>;
+
+inline namespace literals {
+
+// J/K
+constexpr auto operator"" _q_W_per_m_K(unsigned long long l) { return thermal_conductivity<watt_per_metre_kelvin, std::int64_t>(l); }
+constexpr auto operator"" _q_W_per_m_K(long double l) { return thermal_conductivity<watt_per_metre_kelvin, long double>(l); }
+
+}  // namespace literals
+
+}  // namespace units::physical::si
