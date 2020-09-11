@@ -22,31 +22,24 @@
 
 #pragma once
 
-#ifndef MP_UNITS_SYSTEM_SI
-
-#error "Please do not include this file directly. Use `units/physical/si/si.h` to prevent potential ODR violation issues."
-
-#endif
-
 #include <units/physical/dimensions.h>
-#include <units/physical/si/base/electric_current.h>
-#include <units/physical/si/base/length.h>
 #include <units/physical/si/prefixes.h>
 #include <units/quantity.h>
 
 namespace units::physical::si {
 
-struct ampere_per_metre_sq : unit<ampere_per_metre_sq> {};
+struct mole : named_unit<mole, "mol", prefix> {};
 
-struct dim_current_density : physical::dim_current_density<dim_current_density, ampere_per_metre_sq, dim_electric_current, dim_length> {};
+struct dim_amount_of_substance : physical::dim_amount_of_substance<mole> {};
 
 template<Unit U, ScalableNumber Rep = double>
-using current_density = quantity<dim_current_density, U, Rep>;
+using amount_of_substance = quantity<dim_amount_of_substance, U, Rep>;
 
 inline namespace literals {
 
-constexpr auto operator"" _q_A_per_m2(unsigned long long l) { return current_density<ampere_per_metre_sq, std::int64_t>(l); }
-constexpr auto operator"" _q_A_per_m2(long double l) { return current_density<ampere_per_metre_sq, long double>(l); }
+// mol
+constexpr auto operator"" _q_mol(unsigned long long l) { return amount_of_substance<mole, std::int64_t>(l); }
+constexpr auto operator"" _q_mol(long double l) { return amount_of_substance<mole, long double>(l); }
 
 }  // namespace literals
 

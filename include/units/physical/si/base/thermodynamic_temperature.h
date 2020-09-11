@@ -22,31 +22,23 @@
 
 #pragma once
 
-#ifndef MP_UNITS_SYSTEM_SI
-
-#error "Please do not include this file directly. Use `units/physical/si/si.h` to prevent potential ODR violation issues."
-
-#endif
-
 #include <units/physical/dimensions.h>
-#include <units/physical/si/base/electric_current.h>
-#include <units/physical/si/base/length.h>
-#include <units/physical/si/prefixes.h>
 #include <units/quantity.h>
 
 namespace units::physical::si {
 
-struct ampere_per_metre_sq : unit<ampere_per_metre_sq> {};
+struct kelvin : named_unit<kelvin, "K", no_prefix> {};
 
-struct dim_current_density : physical::dim_current_density<dim_current_density, ampere_per_metre_sq, dim_electric_current, dim_length> {};
+struct dim_thermodynamic_temperature : physical::dim_thermodynamic_temperature<kelvin> {};
 
 template<Unit U, ScalableNumber Rep = double>
-using current_density = quantity<dim_current_density, U, Rep>;
+using thermodynamic_temperature = quantity<dim_thermodynamic_temperature, U, Rep>;
 
 inline namespace literals {
 
-constexpr auto operator"" _q_A_per_m2(unsigned long long l) { return current_density<ampere_per_metre_sq, std::int64_t>(l); }
-constexpr auto operator"" _q_A_per_m2(long double l) { return current_density<ampere_per_metre_sq, long double>(l); }
+// K
+constexpr auto operator"" _q_K(unsigned long long l) { return thermodynamic_temperature<kelvin, std::int64_t>(l); }
+constexpr auto operator"" _q_K(long double l) { return thermodynamic_temperature<kelvin, long double>(l); }
 
 }  // namespace literals
 

@@ -22,32 +22,22 @@
 
 #pragma once
 
-#ifndef MP_UNITS_SYSTEM_SI
+#include <units/concepts.h>
+#include <units/physical/bits/electric_charge.h>
+#include <units/physical/bits/length.h>
 
-#error "Please do not include this file directly. Use `units/physical/si/si.h` to prevent potential ODR violation issues."
+namespace units::physical {
 
-#endif
+template<typename Child, Unit U, DimensionOfT<dim_electric_charge> Q, DimensionOfT<dim_length> L>
+struct dim_charge_density : derived_dimension<Child, U, exponent<Q, 1>, exponent<L, -3>> {};
 
-#include <units/physical/dimensions.h>
-#include <units/physical/si/base/electric_current.h>
-#include <units/physical/si/base/length.h>
-#include <units/physical/si/prefixes.h>
-#include <units/quantity.h>
+template<typename Child, Unit U, DimensionOfT<dim_electric_charge> Q, DimensionOfT<dim_length> L>
+struct dim_surface_charge_density : derived_dimension<Child, U, exponent<Q, 1>, exponent<L, -2>> {};
 
-namespace units::physical::si {
+template<typename T>
+concept ChargeDensity = QuantityOfT<T, dim_charge_density>;
 
-struct ampere_per_metre_sq : unit<ampere_per_metre_sq> {};
+template<typename T>
+concept SurfaceChargeDensity = QuantityOfT<T, dim_surface_charge_density>;
 
-struct dim_current_density : physical::dim_current_density<dim_current_density, ampere_per_metre_sq, dim_electric_current, dim_length> {};
-
-template<Unit U, ScalableNumber Rep = double>
-using current_density = quantity<dim_current_density, U, Rep>;
-
-inline namespace literals {
-
-constexpr auto operator"" _q_A_per_m2(unsigned long long l) { return current_density<ampere_per_metre_sq, std::int64_t>(l); }
-constexpr auto operator"" _q_A_per_m2(long double l) { return current_density<ampere_per_metre_sq, long double>(l); }
-
-}  // namespace literals
-
-}  // namespace units::physical::si
+}  // namespace units::physical

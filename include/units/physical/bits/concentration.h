@@ -22,32 +22,16 @@
 
 #pragma once
 
-#ifndef MP_UNITS_SYSTEM_SI
+#include <units/concepts.h>
+#include <units/physical/bits/length.h>
+#include <units/physical/bits/amount_of_substance.h>
 
-#error "Please do not include this file directly. Use `units/physical/si/si.h` to prevent potential ODR violation issues."
+namespace units::physical {
 
-#endif
+template<typename Child, Unit U, DimensionOfT<dim_amount_of_substance> M, DimensionOfT<dim_length> L>
+struct dim_concentration : derived_dimension<Child, U, exponent<M, 1>, exponent<L, -3>> {};
 
-#include <units/physical/dimensions.h>
-#include <units/physical/si/base/electric_current.h>
-#include <units/physical/si/base/length.h>
-#include <units/physical/si/prefixes.h>
-#include <units/quantity.h>
+template<typename T>
+concept Concentration = QuantityOfT<T, dim_concentration>;
 
-namespace units::physical::si {
-
-struct ampere_per_metre_sq : unit<ampere_per_metre_sq> {};
-
-struct dim_current_density : physical::dim_current_density<dim_current_density, ampere_per_metre_sq, dim_electric_current, dim_length> {};
-
-template<Unit U, ScalableNumber Rep = double>
-using current_density = quantity<dim_current_density, U, Rep>;
-
-inline namespace literals {
-
-constexpr auto operator"" _q_A_per_m2(unsigned long long l) { return current_density<ampere_per_metre_sq, std::int64_t>(l); }
-constexpr auto operator"" _q_A_per_m2(long double l) { return current_density<ampere_per_metre_sq, long double>(l); }
-
-}  // namespace literals
-
-}  // namespace units::physical::si
+}  // namespace units::physical

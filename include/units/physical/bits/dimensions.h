@@ -22,6 +22,8 @@
 
 #pragma once
 
+#include <units/concepts.h>
+
 #include <units/physical/bits/absorbed_dose.h>
 #include <units/physical/bits/acceleration.h>
 #include <units/physical/bits/amount_of_substance.h>
