@@ -22,29 +22,27 @@
 
 #pragma once
 
-#include <units/customization_points.h>
-#include <units/isq/si/time.h>
-#include <chrono>
+#include <units/isq/dimensions/density.h>
+#include <units/isq/si/mass.h>
+#include <units/isq/si/length.h>
+#include <units/isq/si/prefixes.h>
+#include <units/quantity.h>
 
-namespace units {
+namespace units::isq::si {
 
-template<typename Rep, typename Period>
-struct quantity_like_traits<std::chrono::duration<Rep, Period>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr rep count(const std::chrono::duration<Rep, Period>& q) { return q.count(); }
-};
+struct kilogram_per_metre_cub : unit<kilogram_per_metre_cub> {};
 
-template<typename C, typename Rep, typename Period>
-struct quantity_point_like_traits<std::chrono::time_point<C, std::chrono::duration<Rep, Period>>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr auto relative(
-    const std::chrono::time_point<C, std::chrono::duration<Rep, Period>>& qp) {
-    return qp.time_since_epoch();
-  }
-};
+struct dim_density : isq::dim_density<dim_density, kilogram_per_metre_cub, dim_mass, dim_length> {};
 
-} // namespace units
+template<UnitOf<dim_density> U, QuantityValue Rep = double>
+using density = quantity<dim_density, U, Rep>;
+
+inline namespace literals {
+
+// kg / m³
+constexpr auto operator"" _q_kg_per_m3(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return density<kilogram_per_metre_cub, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_kg_per_m3(long double l) { return density<kilogram_per_metre_cub, long double>(l); }
+
+}  // namespace literals
+
+}  // namespace units::isq::si

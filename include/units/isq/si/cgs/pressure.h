@@ -22,29 +22,33 @@
 
 #pragma once
 
-#include <units/customization_points.h>
-#include <units/isq/si/time.h>
-#include <chrono>
+#include <units/isq/dimensions/pressure.h>
+#include <units/isq/si/cgs/area.h>
+#include <units/isq/si/cgs/force.h>
+#include <units/isq/si/prefixes.h>
+#include <units/quantity.h>
 
-namespace units {
+namespace units::isq::si::cgs {
 
-template<typename Rep, typename Period>
-struct quantity_like_traits<std::chrono::duration<Rep, Period>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr rep count(const std::chrono::duration<Rep, Period>& q) { return q.count(); }
-};
+struct barye : named_unit<barye, "Ba", si::prefix> {};
 
-template<typename C, typename Rep, typename Period>
-struct quantity_point_like_traits<std::chrono::time_point<C, std::chrono::duration<Rep, Period>>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr auto relative(
-    const std::chrono::time_point<C, std::chrono::duration<Rep, Period>>& qp) {
-    return qp.time_since_epoch();
-  }
-};
+struct dim_pressure : isq::dim_pressure<dim_pressure, barye, dim_force, dim_area> {};
 
-} // namespace units
+template<UnitOf<dim_pressure> U, QuantityValue Rep = double>
+using pressure = quantity<dim_pressure, U, Rep>;
+
+inline namespace literals {
+
+// Ba
+constexpr auto operator"" _q_Ba(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return pressure<barye, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_Ba(long double l) { return pressure<barye, long double>(l); }
+
+}  // namespace literals
+
+namespace unit_constants {
+
+inline constexpr auto Ba = pressure<barye, one_rep>{};
+
+}  // namespace unit_constants
+
+}  // namespace units::isq::si::cgs

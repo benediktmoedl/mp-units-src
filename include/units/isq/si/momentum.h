@@ -22,29 +22,25 @@
 
 #pragma once
 
-#include <units/customization_points.h>
-#include <units/isq/si/time.h>
-#include <chrono>
+#include <units/isq/dimensions/momentum.h>
+#include <units/isq/si/mass.h>
+#include <units/isq/si/speed.h>
+#include <units/quantity.h>
 
-namespace units {
+namespace units::isq::si {
 
-template<typename Rep, typename Period>
-struct quantity_like_traits<std::chrono::duration<Rep, Period>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr rep count(const std::chrono::duration<Rep, Period>& q) { return q.count(); }
-};
+struct kilogram_metre_per_second : unit<kilogram_metre_per_second> {};
+struct dim_momentum : isq::dim_momentum<dim_momentum, kilogram_metre_per_second, dim_mass, dim_speed> {};
 
-template<typename C, typename Rep, typename Period>
-struct quantity_point_like_traits<std::chrono::time_point<C, std::chrono::duration<Rep, Period>>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr auto relative(
-    const std::chrono::time_point<C, std::chrono::duration<Rep, Period>>& qp) {
-    return qp.time_since_epoch();
-  }
-};
+template<UnitOf<dim_momentum> U, QuantityValue Rep = double>
+using momentum = quantity<dim_momentum, U, Rep>;
 
-} // namespace units
+inline namespace literals {
+
+// kg*m/s
+constexpr auto operator"" _q_kg_m_per_s(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return momentum<kilogram_metre_per_second, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_kg_m_per_s(long double l) { return momentum<kilogram_metre_per_second, long double>(l); }
+
+}  // namespace literals
+
+}  // namespace units::isq::si

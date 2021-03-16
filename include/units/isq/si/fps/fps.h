@@ -22,29 +22,16 @@
 
 #pragma once
 
-#include <units/customization_points.h>
-#include <units/isq/si/time.h>
-#include <chrono>
+#include <units/isq/si/fps/length.h>
+#include <units/isq/si/fps/mass.h>
+#include <units/isq/si/fps/time.h>
 
-namespace units {
-
-template<typename Rep, typename Period>
-struct quantity_like_traits<std::chrono::duration<Rep, Period>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr rep count(const std::chrono::duration<Rep, Period>& q) { return q.count(); }
-};
-
-template<typename C, typename Rep, typename Period>
-struct quantity_point_like_traits<std::chrono::time_point<C, std::chrono::duration<Rep, Period>>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr auto relative(
-    const std::chrono::time_point<C, std::chrono::duration<Rep, Period>>& qp) {
-    return qp.time_since_epoch();
-  }
-};
-
-} // namespace units
+#include <units/isq/si/fps/acceleration.h>
+#include <units/isq/si/fps/area.h>
+#include <units/isq/si/fps/density.h>
+#include <units/isq/si/fps/energy.h>
+#include <units/isq/si/fps/force.h>
+#include <units/isq/si/fps/power.h>
+#include <units/isq/si/fps/pressure.h>
+#include <units/isq/si/fps/speed.h>
+#include <units/isq/si/fps/volume.h>

@@ -22,29 +22,32 @@
 
 #pragma once
 
-#include <units/customization_points.h>
-#include <units/isq/si/time.h>
-#include <chrono>
+#include <units/isq/dimensions/energy.h>
+#include <units/isq/si/cgs/force.h>
+#include <units/isq/si/prefixes.h>
+#include <units/quantity.h>
 
-namespace units {
+namespace units::isq::si::cgs {
 
-template<typename Rep, typename Period>
-struct quantity_like_traits<std::chrono::duration<Rep, Period>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr rep count(const std::chrono::duration<Rep, Period>& q) { return q.count(); }
-};
+struct erg : named_unit<erg, "erg", si::prefix> {};
 
-template<typename C, typename Rep, typename Period>
-struct quantity_point_like_traits<std::chrono::time_point<C, std::chrono::duration<Rep, Period>>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr auto relative(
-    const std::chrono::time_point<C, std::chrono::duration<Rep, Period>>& qp) {
-    return qp.time_since_epoch();
-  }
-};
+struct dim_energy : isq::dim_energy<dim_energy, erg, dim_force, dim_length> {};
 
-} // namespace units
+template<UnitOf<dim_energy> U, QuantityValue Rep = double>
+using energy = quantity<dim_energy, U, Rep>;
+
+inline namespace literals {
+
+// erg
+constexpr auto operator"" _q_erg(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return energy<erg, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_erg(long double l) { return energy<erg, long double>(l); }
+
+}  // namespace literals
+
+namespace unit_constants {
+
+inline constexpr auto erg = energy<cgs::erg, one_rep>{};
+
+}  // namespace unit_constants
+
+}  // namespace units::isq::si::cgs

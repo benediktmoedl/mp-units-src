@@ -22,29 +22,37 @@
 
 #pragma once
 
-#include <units/isq/si/prefixes.h>
+#include <units/isq/dimensions/volume.h>
+#include <units/isq/si/fps/length.h>
 #include <units/quantity.h>
 
-namespace units {
+namespace units::isq::si::fps {
 
-struct radian : named_unit<radian, "rad", isq::si::prefix> {};
+struct cubic_foot : unit<cubic_foot> {};
+struct dim_volume : isq::dim_volume<dim_volume, cubic_foot, dim_length> {};
 
-template<Unit U = radian>
-struct dim_angle : base_dimension<"A", U> {};
+struct cubic_yard : deduced_unit<cubic_yard, dim_volume, yard> {};
 
-template<typename T>
-concept Angle = QuantityOfT<T, dim_angle>;
-
-template<UnitOf<dim_angle<>> U, QuantityValue Rep = double>
-using angle = quantity<dim_angle<>, U, Rep>;
+template<UnitOf<dim_volume> U, QuantityValue Rep = double>
+using volume = quantity<dim_volume, U, Rep>;
 
 inline namespace literals {
 
-// rad
-constexpr auto operator"" _q_rad(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return angle<radian, std::int64_t>(static_cast<std::int64_t>(l)); }
-constexpr auto operator"" _q_rad(long double l) { return angle<radian, long double>(l); }
+// ft3
+constexpr auto operator"" _q_ft3(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return volume<cubic_foot, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_ft3(long double l) { return volume<cubic_foot, long double>(l); }
 
+// yd3
+constexpr auto operator"" _q_yd3(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return volume<cubic_yard, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_yd3(long double l) { return volume<cubic_yard, long double>(l); }
 
 }  // namespace literals
 
-}  // namespace units
+namespace unit_constants {
+
+inline constexpr auto ft3 = volume<cubic_foot, one_rep>{};
+inline constexpr auto yd3 = volume<cubic_yard, one_rep>{};
+
+}  // namespace unit_constants
+
+}  // namespace units::isq::si::fps

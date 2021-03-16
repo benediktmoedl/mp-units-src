@@ -22,29 +22,16 @@
 
 #pragma once
 
-#include <units/customization_points.h>
-#include <units/isq/si/time.h>
-#include <chrono>
+#include <units/concepts.h>
+#include <units/isq/dimensions/length.h>
+#include <units/isq/dimensions/time.h>
 
-namespace units {
+namespace units::isq {
 
-template<typename Rep, typename Period>
-struct quantity_like_traits<std::chrono::duration<Rep, Period>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr rep count(const std::chrono::duration<Rep, Period>& q) { return q.count(); }
-};
+template<typename Child, Unit U, DimensionOfT<dim_length> L, DimensionOfT<dim_time> T>
+struct dim_speed : derived_dimension<Child, U, exponent<L, 1>, exponent<T, -1>> {};
 
-template<typename C, typename Rep, typename Period>
-struct quantity_point_like_traits<std::chrono::time_point<C, std::chrono::duration<Rep, Period>>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr auto relative(
-    const std::chrono::time_point<C, std::chrono::duration<Rep, Period>>& qp) {
-    return qp.time_since_epoch();
-  }
-};
+template<typename T>
+concept Speed = QuantityOfT<T, dim_speed>;
 
-} // namespace units
+}  // namespace units::isq

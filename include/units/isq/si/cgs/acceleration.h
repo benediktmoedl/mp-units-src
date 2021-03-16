@@ -22,29 +22,30 @@
 
 #pragma once
 
-#include <units/customization_points.h>
-#include <units/isq/si/time.h>
-#include <chrono>
+#include <units/isq/dimensions/acceleration.h>
+#include <units/isq/si/cgs/speed.h>
+#include <units/quantity.h>
 
-namespace units {
+namespace units::isq::si::cgs {
 
-template<typename Rep, typename Period>
-struct quantity_like_traits<std::chrono::duration<Rep, Period>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr rep count(const std::chrono::duration<Rep, Period>& q) { return q.count(); }
-};
+struct gal : named_unit<gal, "Gal", si::prefix> {};
+struct dim_acceleration : isq::dim_acceleration<dim_acceleration, gal, dim_length, dim_time> {};
 
-template<typename C, typename Rep, typename Period>
-struct quantity_point_like_traits<std::chrono::time_point<C, std::chrono::duration<Rep, Period>>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr auto relative(
-    const std::chrono::time_point<C, std::chrono::duration<Rep, Period>>& qp) {
-    return qp.time_since_epoch();
-  }
-};
+template<UnitOf<dim_acceleration> U, QuantityValue Rep = double>
+using acceleration = quantity<dim_acceleration, U, Rep>;
 
-} // namespace units
+inline namespace literals {
+
+// Gal
+constexpr auto operator"" _q_Gal(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return acceleration<gal, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_Gal(long double l) { return acceleration<gal, long double>(l); }
+
+}  // namespace literals
+
+namespace unit_constants {
+
+inline constexpr auto Gal = acceleration<gal, one_rep>{};
+
+}  // namespace unit_constants
+
+}  // namespace units::isq::si::cgs

@@ -22,29 +22,31 @@
 
 #pragma once
 
-#include <units/customization_points.h>
+#include <units/isq/dimensions/speed.h>
+#include <units/isq/si/length.h>
 #include <units/isq/si/time.h>
-#include <chrono>
+#include <units/quantity.h>
 
-namespace units {
+namespace units::isq::si {
 
-template<typename Rep, typename Period>
-struct quantity_like_traits<std::chrono::duration<Rep, Period>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr rep count(const std::chrono::duration<Rep, Period>& q) { return q.count(); }
-};
+struct metre_per_second : unit<metre_per_second> {};
+struct dim_speed : isq::dim_speed<dim_speed, metre_per_second, dim_length, dim_time> {};
 
-template<typename C, typename Rep, typename Period>
-struct quantity_point_like_traits<std::chrono::time_point<C, std::chrono::duration<Rep, Period>>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr auto relative(
-    const std::chrono::time_point<C, std::chrono::duration<Rep, Period>>& qp) {
-    return qp.time_since_epoch();
-  }
-};
+struct kilometre_per_hour : deduced_unit<kilometre_per_hour, dim_speed, kilometre, hour> {};
 
-} // namespace units
+template<UnitOf<dim_speed> U, QuantityValue Rep = double>
+using speed = quantity<dim_speed, U, Rep>;
+
+inline namespace literals {
+
+// m/s
+constexpr auto operator"" _q_m_per_s(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return speed<metre_per_second, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_m_per_s(long double l) { return speed<metre_per_second, long double>(l); }
+
+// km/h
+constexpr auto operator"" _q_km_per_h(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return speed<kilometre_per_hour, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_km_per_h(long double l) { return speed<kilometre_per_hour, long double>(l); }
+
+}  // namespace literals
+
+}  // namespace units::isq::si

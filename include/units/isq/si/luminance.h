@@ -22,29 +22,26 @@
 
 #pragma once
 
-#include <units/customization_points.h>
-#include <units/isq/si/time.h>
-#include <chrono>
+#include <units/isq/dimensions/luminance.h>
+#include <units/isq/si/length.h>
+#include <units/isq/si/luminous_intensity.h>
+#include <units/quantity.h>
 
-namespace units {
+namespace units::isq::si {
 
-template<typename Rep, typename Period>
-struct quantity_like_traits<std::chrono::duration<Rep, Period>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr rep count(const std::chrono::duration<Rep, Period>& q) { return q.count(); }
-};
+struct candela_per_metre_sq : unit<candela_per_metre_sq> {};
+struct dim_luminance : isq::dim_luminance<dim_luminance, candela_per_metre_sq, dim_luminous_intensity, dim_length> {};
 
-template<typename C, typename Rep, typename Period>
-struct quantity_point_like_traits<std::chrono::time_point<C, std::chrono::duration<Rep, Period>>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr auto relative(
-    const std::chrono::time_point<C, std::chrono::duration<Rep, Period>>& qp) {
-    return qp.time_since_epoch();
-  }
-};
+template<UnitOf<dim_luminance> U, QuantityValue Rep = double>
+using luminance = quantity<dim_luminance, U, Rep>;
 
-} // namespace units
+inline namespace literals {
+
+// cd/m²
+constexpr auto operator"" _q_cd_per_m2(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return luminance<candela_per_metre_sq, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_cd_per_m2(long double l) { return luminance<candela_per_metre_sq, long double>(l); }
+
+}  // namespace literals
+
+}  // namespace units::isq::si
+

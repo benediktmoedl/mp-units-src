@@ -22,29 +22,31 @@
 
 #pragma once
 
-#include <units/customization_points.h>
-#include <units/isq/si/time.h>
-#include <chrono>
+#include <units/one_rep.h>
+#include <units/isq/dimensions/thermodynamic_temperature.h>
+#include <units/quantity.h>
 
-namespace units {
+namespace units::isq::si {
 
-template<typename Rep, typename Period>
-struct quantity_like_traits<std::chrono::duration<Rep, Period>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr rep count(const std::chrono::duration<Rep, Period>& q) { return q.count(); }
-};
+struct kelvin : named_unit<kelvin, "K", no_prefix> {};
 
-template<typename C, typename Rep, typename Period>
-struct quantity_point_like_traits<std::chrono::time_point<C, std::chrono::duration<Rep, Period>>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr auto relative(
-    const std::chrono::time_point<C, std::chrono::duration<Rep, Period>>& qp) {
-    return qp.time_since_epoch();
-  }
-};
+struct dim_thermodynamic_temperature : isq::dim_thermodynamic_temperature<kelvin> {};
 
-} // namespace units
+template<UnitOf<dim_thermodynamic_temperature> U, QuantityValue Rep = double>
+using thermodynamic_temperature = quantity<dim_thermodynamic_temperature, U, Rep>;
+
+inline namespace literals {
+
+// K
+constexpr auto operator"" _q_K(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return thermodynamic_temperature<kelvin, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_K(long double l) { return thermodynamic_temperature<kelvin, long double>(l); }
+
+}  // namespace literals
+
+namespace unit_constants {
+
+inline constexpr auto K = thermodynamic_temperature<kelvin, one_rep>{};
+
+}  // namespace unit_constants
+
+}  // namespace units::isq::si

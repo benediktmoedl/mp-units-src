@@ -22,29 +22,32 @@
 
 #pragma once
 
-#include <units/customization_points.h>
+#include <units/isq/dimensions/electric_charge.h>
+#include <units/isq/si/electric_current.h>
 #include <units/isq/si/time.h>
-#include <chrono>
+#include <units/quantity.h>
 
-namespace units {
+namespace units::isq::si {
 
-template<typename Rep, typename Period>
-struct quantity_like_traits<std::chrono::duration<Rep, Period>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr rep count(const std::chrono::duration<Rep, Period>& q) { return q.count(); }
-};
+struct coulomb : named_unit<coulomb, "C", prefix> {};
 
-template<typename C, typename Rep, typename Period>
-struct quantity_point_like_traits<std::chrono::time_point<C, std::chrono::duration<Rep, Period>>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr auto relative(
-    const std::chrono::time_point<C, std::chrono::duration<Rep, Period>>& qp) {
-    return qp.time_since_epoch();
-  }
-};
+struct dim_electric_charge : isq::dim_electric_charge<dim_electric_charge, coulomb, dim_time, dim_electric_current> {};
 
-} // namespace units
+template<UnitOf<dim_electric_charge> U, QuantityValue Rep = double>
+using electric_charge = quantity<dim_electric_charge, U, Rep>;
+
+inline namespace literals {
+
+// C
+constexpr auto operator"" _q_C(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return electric_charge<coulomb, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_C(long double l) { return electric_charge<coulomb, long double>(l); }
+
+}  // namespace literals
+
+namespace unit_constants {
+
+inline constexpr auto C = electric_charge<coulomb, one_rep>{};
+
+}  // namespace unit_constants
+
+}  // namespace units::isq::si

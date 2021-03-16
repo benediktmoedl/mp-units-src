@@ -22,29 +22,30 @@
 
 #pragma once
 
-#include <units/customization_points.h>
-#include <units/isq/si/time.h>
-#include <chrono>
+#include <units/isq/si/length.h>
+#include <units/quantity.h>
 
-namespace units {
+namespace units::isq::si::cgs {
 
-template<typename Rep, typename Period>
-struct quantity_like_traits<std::chrono::duration<Rep, Period>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr rep count(const std::chrono::duration<Rep, Period>& q) { return q.count(); }
-};
+using si::centimetre;
 
-template<typename C, typename Rep, typename Period>
-struct quantity_point_like_traits<std::chrono::time_point<C, std::chrono::duration<Rep, Period>>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr auto relative(
-    const std::chrono::time_point<C, std::chrono::duration<Rep, Period>>& qp) {
-    return qp.time_since_epoch();
-  }
-};
+struct dim_length : isq::dim_length<centimetre> {};
 
-} // namespace units
+template<UnitOf<dim_length> U, QuantityValue Rep = double>
+using length = quantity<dim_length, U, Rep>;
+
+inline namespace literals {
+
+// cm
+constexpr auto operator"" _q_cm(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return length<centimetre, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_cm(long double l) { return length<centimetre, long double>(l); }
+
+}  // namespace literals
+
+namespace unit_constants {
+
+inline constexpr auto cm = length<centimetre, one_rep>{};
+
+}  // namespace unit_constants
+
+}  // namespace units::isq::si::cgs

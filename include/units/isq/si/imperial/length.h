@@ -22,29 +22,33 @@
 
 #pragma once
 
-#include <units/isq/si/prefixes.h>
-#include <units/quantity.h>
+#include <units/isq/si/international/length.h>
 
-namespace units {
+namespace units::isq::si::imperial {
 
-struct radian : named_unit<radian, "rad", isq::si::prefix> {};
+// https://en.wikipedia.org/wiki/Chain_(unit)
+struct chain : named_scaled_unit<chain, "ch", no_prefix, ratio(22, 1), si::international::yard> {};
 
-template<Unit U = radian>
-struct dim_angle : base_dimension<"A", U> {};
-
-template<typename T>
-concept Angle = QuantityOfT<T, dim_angle>;
-
-template<UnitOf<dim_angle<>> U, QuantityValue Rep = double>
-using angle = quantity<dim_angle<>, U, Rep>;
+// https://en.wikipedia.org/wiki/Rod_(unit)
+struct rod : named_scaled_unit<rod, "rd", no_prefix, ratio(1, 4), chain> {};
 
 inline namespace literals {
 
-// rad
-constexpr auto operator"" _q_rad(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return angle<radian, std::int64_t>(static_cast<std::int64_t>(l)); }
-constexpr auto operator"" _q_rad(long double l) { return angle<radian, long double>(l); }
+// ch
+constexpr auto operator"" _q_ch(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return si::length<chain, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_ch(long double l) { return si::length<chain, long double>(l); }
 
+// rd
+constexpr auto operator"" _q_rd(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return si::length<rod, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_rd(long double l) { return si::length<rod, long double>(l); }
 
 }  // namespace literals
 
-}  // namespace units
+namespace unit_constants {
+
+inline constexpr auto ch = si::length<chain, one_rep>{};
+inline constexpr auto rd = si::length<rod, one_rep>{};
+
+}  // namespace unit_constants
+
+}  // namespace units::isq::si::imperial

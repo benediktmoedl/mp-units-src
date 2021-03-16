@@ -22,29 +22,30 @@
 
 #pragma once
 
-#include <units/customization_points.h>
-#include <units/isq/si/time.h>
-#include <chrono>
+#include <units/isq/dimensions/amount_of_substance.h>
+#include <units/concepts.h>
+#include <units/isq/dimensions/energy.h>
+#include <units/isq/dimensions/mass.h>
+#include <units/isq/dimensions/thermodynamic_temperature.h>
 
-namespace units {
+namespace units::isq {
 
-template<typename Rep, typename Period>
-struct quantity_like_traits<std::chrono::duration<Rep, Period>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr rep count(const std::chrono::duration<Rep, Period>& q) { return q.count(); }
-};
+template<typename Child, Unit U, DimensionOfT<dim_energy> E, DimensionOfT<dim_thermodynamic_temperature> T>
+struct dim_heat_capacity : derived_dimension<Child, U, exponent<E, 1>, exponent<T, -1>> {};
 
-template<typename C, typename Rep, typename Period>
-struct quantity_point_like_traits<std::chrono::time_point<C, std::chrono::duration<Rep, Period>>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr auto relative(
-    const std::chrono::time_point<C, std::chrono::duration<Rep, Period>>& qp) {
-    return qp.time_since_epoch();
-  }
-};
+template<typename Child, Unit U, DimensionOfT<dim_heat_capacity> C, DimensionOfT<dim_mass> M>
+struct dim_specific_heat_capacity : derived_dimension<Child, U, exponent<C, 1>, exponent<M, -1>> {};
 
-} // namespace units
+template<typename Child, Unit U, DimensionOfT<dim_heat_capacity> C, DimensionOfT<dim_amount_of_substance> M>
+struct dim_molar_heat_capacity : derived_dimension<Child, U, exponent<C, 1>, exponent<M, -1>> {};
+
+template<typename T>
+concept HeatCapacity = QuantityOfT<T, dim_heat_capacity>;
+
+template<typename T>
+concept SpecificHeatCapacity = QuantityOfT<T, dim_specific_heat_capacity>;
+
+template<typename T>
+concept MolarHeatCapacity = QuantityOfT<T, dim_molar_heat_capacity>;
+
+}  // namespace units::isq

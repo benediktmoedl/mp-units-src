@@ -22,29 +22,19 @@
 
 #pragma once
 
-#include <units/customization_points.h>
-#include <units/isq/si/time.h>
-#include <chrono>
+#include <units/unit.h>
+#include <units/isq/si/prefixes.h>
 
-namespace units {
+namespace units::isq::natural {
 
-template<typename Rep, typename Period>
-struct quantity_like_traits<std::chrono::duration<Rep, Period>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr rep count(const std::chrono::duration<Rep, Period>& q) { return q.count(); }
-};
+struct electronvolt : named_unit<electronvolt, "eV", si::prefix> {};
+struct gigaelectronvolt : prefixed_unit<gigaelectronvolt, si::giga, electronvolt> {};
+struct inverted_gigaelectronvolt : named_unit<inverted_gigaelectronvolt, basic_symbol_text{"GeV⁻¹", "GeV^-1"}, no_prefix> {};
+struct square_gigaelectronvolt : named_unit<square_gigaelectronvolt, basic_symbol_text{"GeV²", "GeV^2"}, no_prefix> {};
 
-template<typename C, typename Rep, typename Period>
-struct quantity_point_like_traits<std::chrono::time_point<C, std::chrono::duration<Rep, Period>>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr auto relative(
-    const std::chrono::time_point<C, std::chrono::duration<Rep, Period>>& qp) {
-    return qp.time_since_epoch();
-  }
-};
+// NOTE: eV as a base unit with no relation to joule prevents us from going back
+// from natural units to SI. Do we need such a support or should we treat
+// natural units as an isolated island with ev = 1 which simplifies all
+// the maths a lot?
 
-} // namespace units
+}  // namespace units::isq::natural

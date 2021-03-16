@@ -22,29 +22,27 @@
 
 #pragma once
 
-#include <units/customization_points.h>
-#include <units/isq/si/time.h>
-#include <chrono>
+#include <units/isq/dimensions/current_density.h>
+#include <units/isq/si/electric_current.h>
+#include <units/isq/si/length.h>
+#include <units/isq/si/prefixes.h>
+#include <units/quantity.h>
 
-namespace units {
+namespace units::isq::si {
 
-template<typename Rep, typename Period>
-struct quantity_like_traits<std::chrono::duration<Rep, Period>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr rep count(const std::chrono::duration<Rep, Period>& q) { return q.count(); }
-};
+struct ampere_per_metre_sq : unit<ampere_per_metre_sq> {};
 
-template<typename C, typename Rep, typename Period>
-struct quantity_point_like_traits<std::chrono::time_point<C, std::chrono::duration<Rep, Period>>> {
-  using dimension = isq::si::dim_time;
-  using unit = downcast_unit<dimension, ratio(Period::num, Period::den)>;
-  using rep = Rep;
-  [[nodiscard]] static constexpr auto relative(
-    const std::chrono::time_point<C, std::chrono::duration<Rep, Period>>& qp) {
-    return qp.time_since_epoch();
-  }
-};
+struct dim_current_density : isq::dim_current_density<dim_current_density, ampere_per_metre_sq, dim_electric_current, dim_length> {};
 
-} // namespace units
+template<UnitOf<dim_current_density> U, QuantityValue Rep = double>
+using current_density = quantity<dim_current_density, U, Rep>;
+
+inline namespace literals {
+
+// A / m²
+constexpr auto operator"" _q_A_per_m2(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return current_density<ampere_per_metre_sq, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_A_per_m2(long double l) { return current_density<ampere_per_metre_sq, long double>(l); }
+
+}  // namespace literals
+
+}  // namespace units::isq::si
