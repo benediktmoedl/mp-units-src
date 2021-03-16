@@ -22,6 +22,25 @@
 
 #pragma once
 
-#include <units/data/information.h>
-#include <units/data/bitrate.h>
-#include <units/data/prefixes.h>
+#include <units/physical/si/area.h>
+#include <units/physical/si/international/length.h>
+
+namespace units::physical::si::international {
+
+struct square_foot : deduced_unit<square_foot, si::dim_area, si::international::foot> {};
+
+inline namespace literals {
+
+// ft2
+constexpr auto operator"" _q_ft2(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return si::area<square_foot, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_ft2(long double l) { return si::area<square_foot, long double>(l); }
+
+}  // namespace literals
+
+namespace unit_constants {
+
+inline constexpr auto ft2 = si::area<square_foot, one_rep>{};
+
+}  // namespace unit_constants
+
+}  // namespace units::physical::si::international

@@ -24,6 +24,31 @@
 
 #include <units/physical/si/international/length.h>
 
-#include <units/physical/si/international/area.h>
-#include <units/physical/si/international/speed.h>
-#include <units/physical/si/international/volume.h>
+namespace units::physical::si::imperial {
+
+// https://en.wikipedia.org/wiki/Chain_(unit)
+struct chain : named_scaled_unit<chain, "ch", no_prefix, ratio(22, 1), si::international::yard> {};
+
+// https://en.wikipedia.org/wiki/Rod_(unit)
+struct rod : named_scaled_unit<rod, "rd", no_prefix, ratio(1, 4), chain> {};
+
+inline namespace literals {
+
+// ch
+constexpr auto operator"" _q_ch(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return si::length<chain, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_ch(long double l) { return si::length<chain, long double>(l); }
+
+// rd
+constexpr auto operator"" _q_rd(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return si::length<rod, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_rd(long double l) { return si::length<rod, long double>(l); }
+
+}  // namespace literals
+
+namespace unit_constants {
+
+inline constexpr auto ch = si::length<chain, one_rep>{};
+inline constexpr auto rd = si::length<rod, one_rep>{};
+
+}  // namespace unit_constants
+
+}  // namespace units::physical::si::imperial

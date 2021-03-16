@@ -22,6 +22,25 @@
 
 #pragma once
 
-#include <units/data/information.h>
-#include <units/data/bitrate.h>
-#include <units/data/prefixes.h>
+#include <units/physical/dimensions/momentum.h>
+#include <units/physical/si/mass.h>
+#include <units/physical/si/speed.h>
+#include <units/quantity.h>
+
+namespace units::physical::si {
+
+struct kilogram_metre_per_second : unit<kilogram_metre_per_second> {};
+struct dim_momentum : physical::dim_momentum<dim_momentum, kilogram_metre_per_second, dim_mass, dim_speed> {};
+
+template<UnitOf<dim_momentum> U, QuantityValue Rep = double>
+using momentum = quantity<dim_momentum, U, Rep>;
+
+inline namespace literals {
+
+// kg*m/s
+constexpr auto operator"" _q_kg_m_per_s(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return momentum<kilogram_metre_per_second, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_kg_m_per_s(long double l) { return momentum<kilogram_metre_per_second, long double>(l); }
+
+}  // namespace literals
+
+}  // namespace units::physical::si

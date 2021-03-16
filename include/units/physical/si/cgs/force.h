@@ -22,6 +22,33 @@
 
 #pragma once
 
-#include <units/data/information.h>
-#include <units/data/bitrate.h>
-#include <units/data/prefixes.h>
+#include <units/physical/dimensions/force.h>
+#include <units/physical/si/cgs/acceleration.h>
+#include <units/physical/si/cgs/mass.h>
+#include <units/physical/si/prefixes.h>
+#include <units/quantity.h>
+
+namespace units::physical::si::cgs {
+
+struct dyne : named_unit<dyne, "dyn", si::prefix> {};
+
+struct dim_force : physical::dim_force<dim_force, dyne, dim_mass, dim_acceleration> {};
+
+template<UnitOf<dim_force> U, QuantityValue Rep = double>
+using force = quantity<dim_force, U, Rep>;
+
+inline namespace literals {
+
+// dyn
+constexpr auto operator"" _q_dyn(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return force<dyne, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_dyn(long double l) { return force<dyne, long double>(l); }
+
+}  // namespace literals
+
+namespace unit_constants {
+
+inline constexpr auto dyn = force<dyne, one_rep>{};
+
+}  // namespace unit_constants
+
+}  // namespace units::physical::si::cgs

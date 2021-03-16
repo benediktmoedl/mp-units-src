@@ -22,6 +22,30 @@
 
 #pragma once
 
-#include <units/data/information.h>
-#include <units/data/bitrate.h>
-#include <units/data/prefixes.h>
+#include <units/physical/si/length.h>
+#include <units/quantity.h>
+
+namespace units::physical::si::cgs {
+
+using si::centimetre;
+
+struct dim_length : physical::dim_length<centimetre> {};
+
+template<UnitOf<dim_length> U, QuantityValue Rep = double>
+using length = quantity<dim_length, U, Rep>;
+
+inline namespace literals {
+
+// cm
+constexpr auto operator"" _q_cm(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return length<centimetre, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_cm(long double l) { return length<centimetre, long double>(l); }
+
+}  // namespace literals
+
+namespace unit_constants {
+
+inline constexpr auto cm = length<centimetre, one_rep>{};
+
+}  // namespace unit_constants
+
+}  // namespace units::physical::si::cgs

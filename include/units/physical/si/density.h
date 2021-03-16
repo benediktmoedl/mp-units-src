@@ -22,6 +22,27 @@
 
 #pragma once
 
-#include <units/data/information.h>
-#include <units/data/bitrate.h>
-#include <units/data/prefixes.h>
+#include <units/physical/dimensions/density.h>
+#include <units/physical/si/mass.h>
+#include <units/physical/si/length.h>
+#include <units/physical/si/prefixes.h>
+#include <units/quantity.h>
+
+namespace units::physical::si {
+
+struct kilogram_per_metre_cub : unit<kilogram_per_metre_cub> {};
+
+struct dim_density : physical::dim_density<dim_density, kilogram_per_metre_cub, dim_mass, dim_length> {};
+
+template<UnitOf<dim_density> U, QuantityValue Rep = double>
+using density = quantity<dim_density, U, Rep>;
+
+inline namespace literals {
+
+// kg / m³
+constexpr auto operator"" _q_kg_per_m3(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return density<kilogram_per_metre_cub, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_kg_per_m3(long double l) { return density<kilogram_per_metre_cub, long double>(l); }
+
+}  // namespace literals
+
+}  // namespace units::physical::si

@@ -22,6 +22,32 @@
 
 #pragma once
 
-#include <units/data/information.h>
-#include <units/data/bitrate.h>
-#include <units/data/prefixes.h>
+#include <units/physical/dimensions/dynamic_viscosity.h>
+#include <units/physical/si/time.h>
+#include <units/physical/si/pressure.h>
+#include <units/quantity.h>
+
+namespace units::physical::si {
+
+struct pascal_second : unit<pascal_second> {};
+struct dim_dynamic_viscosity : physical::dim_dynamic_viscosity<dim_dynamic_viscosity, pascal_second, dim_pressure, dim_time> {};
+
+template<UnitOf<dim_dynamic_viscosity> U, QuantityValue Rep = double>
+using dynamic_viscosity = quantity<dim_dynamic_viscosity, U, Rep>;
+
+inline namespace literals {
+
+// Pa·s
+constexpr auto operator"" _q_Pa_s(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return dynamic_viscosity<pascal_second, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_Pa_s(long double l) { return dynamic_viscosity<pascal_second, long double>(l); }
+
+}  // namespace literals
+
+namespace unit_constants {
+
+inline constexpr auto Pa_s = dynamic_viscosity<pascal_second, one_rep>{};
+
+}  // namespace unit_constants
+
+}  // namespace units::physical::si
+

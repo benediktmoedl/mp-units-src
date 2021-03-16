@@ -22,6 +22,25 @@
 
 #pragma once
 
-#include <units/data/information.h>
-#include <units/data/bitrate.h>
-#include <units/data/prefixes.h>
+#include <units/physical/dimensions/speed.h>
+#include <units/physical/si/cgs/length.h>
+#include <units/physical/si/cgs/time.h>
+#include <units/quantity.h>
+
+namespace units::physical::si::cgs {
+
+struct centimetre_per_second : unit<centimetre_per_second> {};
+struct dim_speed : physical::dim_speed<dim_speed, centimetre_per_second, dim_length, dim_time> {};
+
+template<UnitOf<dim_speed> U, QuantityValue Rep = double>
+using speed = quantity<dim_speed, U, Rep>;
+
+inline namespace literals {
+
+// cm/s
+constexpr auto operator"" _q_cm_per_s(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return speed<centimetre_per_second, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_cm_per_s(long double l) { return speed<centimetre_per_second, long double>(l); }
+
+}  // namespace literals
+
+}  // namespace units::physical::si::cgs

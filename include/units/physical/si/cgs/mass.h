@@ -22,6 +22,30 @@
 
 #pragma once
 
-#include <units/data/information.h>
-#include <units/data/bitrate.h>
-#include <units/data/prefixes.h>
+#include <units/physical/si/mass.h>
+#include <units/quantity.h>
+
+namespace units::physical::si::cgs {
+
+using si::gram;
+
+struct dim_mass : physical::dim_mass<gram> {};
+
+template<UnitOf<dim_mass> U, QuantityValue Rep = double>
+using mass = quantity<dim_mass, U, Rep>;
+
+inline namespace literals {
+
+// g
+constexpr auto operator"" _q_g(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return mass<gram, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_g(long double l) { return mass<gram, long double>(l); }
+
+}  // namespace literals
+
+namespace unit_constants {
+
+inline constexpr auto g = mass<gram, one_rep>{};
+
+}  // namespace unit_constants
+
+}  // namespace units::physical::si::cgs

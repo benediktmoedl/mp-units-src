@@ -22,6 +22,33 @@
 
 #pragma once
 
-#include <units/data/information.h>
-#include <units/data/bitrate.h>
-#include <units/data/prefixes.h>
+#include <units/physical/dimensions/torque.h>
+#include <units/physical/si/energy.h>
+#include <units/generic/angle.h>
+#include <units/physical/si/prefixes.h>
+#include <units/quantity.h>
+
+namespace units::physical::si {
+
+struct newton_metre_per_radian : unit<newton_metre_per_radian> {};
+
+struct dim_torque : physical::dim_torque<dim_torque, newton_metre_per_radian, dim_force, dim_length, dim_angle<>> {};
+
+template<UnitOf<dim_torque> U, QuantityValue Rep = double>
+using torque = quantity<dim_torque, U, Rep>;
+
+inline namespace literals {
+
+// Nm
+constexpr auto operator"" _q_Nm_per_rad(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return torque<newton_metre_per_radian, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_Nm_per_rad(long double l) { return torque<newton_metre_per_radian, long double>(l); }
+
+}  // namespace literals
+
+namespace unit_constants {
+
+inline constexpr auto Nm_per_rad = torque<newton_metre_per_radian, one_rep>{};
+
+}  // namespace unit_constants
+
+}  // namespace units::physical::si

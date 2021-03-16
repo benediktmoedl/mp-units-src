@@ -22,6 +22,32 @@
 
 #pragma once
 
-#include <units/data/information.h>
-#include <units/data/bitrate.h>
-#include <units/data/prefixes.h>
+#include <units/physical/dimensions/energy.h>
+#include <units/physical/si/cgs/force.h>
+#include <units/physical/si/prefixes.h>
+#include <units/quantity.h>
+
+namespace units::physical::si::cgs {
+
+struct erg : named_unit<erg, "erg", si::prefix> {};
+
+struct dim_energy : physical::dim_energy<dim_energy, erg, dim_force, dim_length> {};
+
+template<UnitOf<dim_energy> U, QuantityValue Rep = double>
+using energy = quantity<dim_energy, U, Rep>;
+
+inline namespace literals {
+
+// erg
+constexpr auto operator"" _q_erg(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return energy<erg, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_erg(long double l) { return energy<erg, long double>(l); }
+
+}  // namespace literals
+
+namespace unit_constants {
+
+inline constexpr auto erg = energy<cgs::erg, one_rep>{};
+
+}  // namespace unit_constants
+
+}  // namespace units::physical::si::cgs

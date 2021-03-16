@@ -22,6 +22,27 @@
 
 #pragma once
 
-#include <units/data/information.h>
-#include <units/data/bitrate.h>
-#include <units/data/prefixes.h>
+#include <units/physical/dimensions/current_density.h>
+#include <units/physical/si/electric_current.h>
+#include <units/physical/si/length.h>
+#include <units/physical/si/prefixes.h>
+#include <units/quantity.h>
+
+namespace units::physical::si {
+
+struct ampere_per_metre_sq : unit<ampere_per_metre_sq> {};
+
+struct dim_current_density : physical::dim_current_density<dim_current_density, ampere_per_metre_sq, dim_electric_current, dim_length> {};
+
+template<UnitOf<dim_current_density> U, QuantityValue Rep = double>
+using current_density = quantity<dim_current_density, U, Rep>;
+
+inline namespace literals {
+
+// A / m²
+constexpr auto operator"" _q_A_per_m2(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return current_density<ampere_per_metre_sq, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_A_per_m2(long double l) { return current_density<ampere_per_metre_sq, long double>(l); }
+
+}  // namespace literals
+
+}  // namespace units::physical::si

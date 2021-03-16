@@ -22,6 +22,31 @@
 
 #pragma once
 
-#include <units/data/information.h>
-#include <units/data/bitrate.h>
-#include <units/data/prefixes.h>
+#include <units/physical/si/area.h>
+#include <units/physical/si/cgs/length.h>
+#include <units/quantity.h>
+
+namespace units::physical::si::cgs {
+
+using si::square_centimetre;
+
+struct dim_area : physical::dim_area<dim_area, square_centimetre, dim_length> {};
+
+template<UnitOf<dim_area> U, QuantityValue Rep = double>
+using area = quantity<dim_area, U, Rep>;
+
+inline namespace literals {
+
+// cm2
+constexpr auto operator"" _q_cm2(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return area<square_centimetre, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_cm2(long double l) { return area<square_centimetre, long double>(l); }
+
+}  // namespace literals
+
+namespace unit_constants {
+
+inline constexpr auto cm2 = area<square_centimetre, one_rep>{};
+
+}  // namespace unit_constants
+
+}  // namespace units::physical::si::cgs

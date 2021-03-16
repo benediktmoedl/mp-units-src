@@ -22,6 +22,26 @@
 
 #pragma once
 
-#include <units/data/information.h>
-#include <units/data/bitrate.h>
-#include <units/data/prefixes.h>
+#include <units/physical/si/time.h>
+#include <units/quantity.h>
+
+namespace units::physical::si::cgs {
+
+using si::second;
+
+using si::dim_time;
+using si::time;
+
+inline namespace literals {
+
+using si::literals::operator"" _q_s;
+
+}  // namespace literals
+
+namespace unit_constants {
+
+using si::unit_constants::s;
+
+}  // namespace unit_constants
+
+}  // namespace units::physical::si::cgs

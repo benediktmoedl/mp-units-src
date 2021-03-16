@@ -22,6 +22,26 @@
 
 #pragma once
 
-#include <units/data/information.h>
-#include <units/data/bitrate.h>
-#include <units/data/prefixes.h>
+#include <units/physical/dimensions/power.h>
+#include <units/physical/si/cgs/energy.h>
+#include <units/physical/si/prefixes.h>
+#include <units/quantity.h>
+
+namespace units::physical::si::cgs {
+
+struct erg_per_second : unit<erg_per_second> {};
+
+struct dim_power : physical::dim_power<dim_power, erg_per_second, dim_energy, dim_time> {};
+
+template<UnitOf<dim_power> U, QuantityValue Rep = double>
+using power = quantity<dim_power, U, Rep>;
+
+inline namespace literals {
+
+// erg/s
+constexpr auto operator"" _q_erg_per_s(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return power<erg_per_second, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_erg_per_s(long double l) { return power<erg_per_second, long double>(l); }
+
+}  // namespace literals
+
+}  // namespace units::physical::si::cgs

@@ -22,6 +22,25 @@
 
 #pragma once
 
-#include <units/data/information.h>
-#include <units/data/bitrate.h>
-#include <units/data/prefixes.h>
+#include <units/physical/si/volume.h>
+#include <units/physical/si/international/length.h>
+
+namespace units::physical::si::international {
+
+struct cubic_foot : deduced_unit<cubic_foot, si::dim_volume, si::international::foot> {};
+
+inline namespace literals {
+
+// ft3
+constexpr auto operator"" _q_ft3(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return si::volume<cubic_foot, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_ft3(long double l) { return si::volume<cubic_foot, long double>(l); }
+
+}  // namespace literals
+
+namespace unit_constants {
+
+inline constexpr auto ft3 = si::volume<cubic_foot, one_rep>{};
+
+}  // namespace unit_constants
+
+}  // namespace units::physical::si::international

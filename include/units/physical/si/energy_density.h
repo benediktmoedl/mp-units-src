@@ -22,6 +22,25 @@
 
 #pragma once
 
-#include <units/data/information.h>
-#include <units/data/bitrate.h>
-#include <units/data/prefixes.h>
+#include <units/physical/dimensions/energy_density.h>
+#include <units/physical/si/energy.h>
+#include <units/physical/si/volume.h>
+#include <units/quantity.h>
+
+namespace units::physical::si {
+
+struct joule_per_metre_cub : unit<joule_per_metre_cub> {};
+struct dim_energy_density : physical::dim_energy_density<dim_energy_density, joule_per_metre_cub, dim_energy, dim_volume> {};
+
+template<UnitOf<dim_energy_density> U, QuantityValue Rep = double>
+using energy_density = quantity<dim_energy_density, U, Rep>;
+
+inline namespace literals {
+
+// N/m
+constexpr auto operator"" _q_J_per_m3(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return energy_density<joule_per_metre_cub, std::int64_t>(static_cast<std::int64_t>(l)); }
+constexpr auto operator"" _q_J_per_m3(long double l) { return energy_density<joule_per_metre_cub, long double>(l); }
+
+}  // namespace literals
+
+}  // namespace units::physical::si
