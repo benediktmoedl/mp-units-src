@@ -22,7 +22,33 @@
 
 #pragma once
 
-#include <units/data/information.h>
-#include <units/data/bitrate.h>
-#include <units/data/symbolrate.h>
-#include <units/data/prefixes.h>
+#include <units/base_dimension.h>
+#include <units/quantity.h>
+#include <units/reference.h>
+#include <units/unit.h>
+
+namespace units::isq::iec80000 {
+
+struct erlang : named_unit<erlang, "E", no_prefix> {};
+
+struct dim_traffic_intensity : base_dimension<"A", erlang> {};
+
+template<typename T>
+concept TrafficIntensity = QuantityOf<T, dim_traffic_intensity>;
+
+template<UnitOf<dim_traffic_intensity> U, Representation Rep = double>
+using traffic_intensity = quantity<dim_traffic_intensity, U, Rep>;
+
+inline namespace literals {
+
+constexpr auto operator"" _q_E(unsigned long long l) { gsl_ExpectsAudit(std::in_range<std::int64_t>(l)); return traffic_intensity<erlang, std::int64_t>(static_cast<std::int64_t>(l)); }
+
+}  // namespace literals
+
+namespace references {
+
+inline constexpr auto E = reference<dim_traffic_intensity, erlang>{};
+
+}  // namespace references
+
+}  // namespace units::isq::iec80000
